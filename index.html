@@ -170,7 +170,13 @@ db.ref('game/lastClick').on('value', snap => {
       ? "💗 ¡Cele presionó primero! ⏸️"
       : "💙 ¡Tade presionó primero! ⏸️";
 });
-
+function clearPlaylist() {
+  if (confirm("¿Seguro que querés borrar TODA la lista de reproducción?")) {
+    db.ref('playlist').set(null); // Borra todos los datos en Firebase
+    document.getElementById("playlist").innerHTML = ""; // Limpia la lista visual
+    document.getElementById("message").innerText = "🧹 Lista de reproducción vaciada";
+  }
+}
 // --- Puntajes ---
 function addPoint(n){ db.ref('game/score'+n).set((n===1?++score1:++score2)); }
 function subtractPoint(n){ db.ref('game/score'+n).set((n===1?--score1:--score2)); }
