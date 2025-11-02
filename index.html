@@ -25,7 +25,7 @@ h1 { margin-bottom:20px; }
 #yt-player-container {
   width: 560px;
   height: 315px;
-  margin: 0 auto;
+  margin: 20px auto;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -80,6 +80,23 @@ h1 { margin-bottom:20px; }
       <button class="score-btn add" onclick="addPoint(2)">+1</button>
       <button class="score-btn subtract" onclick="subtractPoint(2)">-1</button>
     </div>
+  </div>
+</div>
+<div id="song-manager" style="display:flex; justify-content:center; gap:20px; margin-top:20px; flex-wrap:wrap;">
+
+  <!-- 🔹 Formulario para agregar canción -->
+  <div id="add-song" style="background:white; padding:15px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.2); width:300px;">
+    <h3>Agregar nueva canción 🎶</h3>
+    <input type="text" id="song-url" placeholder="URL de YouTube" style="width:100%; padding:8px; margin-bottom:8px;">
+    <input type="text" id="song-name" placeholder="Título (opcional)" style="width:100%; padding:8px; margin-bottom:8px;">
+    <button onclick="addSong()" style="padding:8px 16px; background-color:#2ecc71; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">Agregar</button>
+  </div>
+
+  <!-- 🔹 Lista de reproducción -->
+  <div id="playlist-container" style="background:white; padding:15px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.2); width:300px; max-height:350px; overflow-y:auto;">
+    <h3>Playlist</h3>
+    <ul id="playlist" style="list-style:none; padding-left:0; margin:0;"></ul>
+    <button id="clearPlaylistBtn" style="margin-top:10px; padding:6px 12px; background-color:#e74c3c; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">🗑️ Limpiar playlist</button>
   </div>
 </div>
 
@@ -209,16 +226,14 @@ db.ref('game/reveal').on('value', s=>{
   const title=s.val();
   if(title) document.getElementById("song-title").innerText=title;
 });
+// --- Extraer ID de YouTube ---
 function extractYouTubeID(url) {
-  try {
-    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-  } catch {
-    return null;
-  }
+  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  return match ? match[1] : null;
 }
 
+// --- Agregar nueva canción ---
 function addSong() {
   const url = document.getElementById("song-url").value.trim();
   const name = document.getElementById("song-name").value.trim() || "Canción Misteriosa";
@@ -231,21 +246,43 @@ function addSong() {
 
   const newSong = { id, title: name };
 
-  // 🔹 Guardar la canción en Firebase (lista global)
-  db.ref('game/playlist').push(newSong);
+  // Guardar en Firebase playlist
+  db.ref('playlist').push(newSong);
 
-  // 🔹 Actualizar canción actual (esto sincroniza y reproduce en todos los dispositivos)
+  // Actualizar video actual y reproducir
   db.ref('game/song').set(newSong);
-
-  // 🔹 Activar reproducción
   db.ref('game/play').set(true);
 
-  // 🔹 Limpiar campos
+  // Limpiar campos
   document.getElementById("song-url").value = "";
   document.getElementById("song-name").value = "";
-
-  alert("🎵 Canción agregada y reproduciéndose");
 }
+
+// --- Limpiar playlist ---
+function clearPlaylist() {
+  if (confirm("¿Seguro que querés borrar toda la lista de reproducción?")) {
+    db.ref('playlist').set(null);
+    document.getElementById("playlist").innerHTML = "";
+    document.getElementById("message").innerText = "🧹 Playlist vaciada";
+  }
+}
+
+// Conectar botón de limpiar
+document.getElementById("clearPlaylistBtn").addEventListener("click", clearPlaylist);
+
+// --- Sincronizar playlist desde Firebase ---
+db.ref('playlist').on('value', snap => {
+  const list = snap.val();
+  const ul = document.getElementById("playlist");
+  ul.innerHTML = "";
+  if (list) {
+    Object.values(list).forEach(song => {
+      const li = document.createElement("li");
+      li.innerText = song.title;
+      ul.appendChild(li);
+    });
+  }
+});
 </script>
 
 </body>
