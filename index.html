@@ -187,25 +187,21 @@ function addSong() {
 
   const newSong = { id, title: name };
 
-  // Guardamos la canción en Firebase
+  // 🔹 Guardar la canción en Firebase (lista global)
   db.ref('game/playlist').push(newSong);
 
-  // Limpiamos los campos
+  // 🔹 Actualizar canción actual (esto sincroniza y reproduce en todos los dispositivos)
+  db.ref('game/song').set(newSong);
+
+  // 🔹 Activar reproducción
+  db.ref('game/play').set(true);
+
+  // 🔹 Limpiar campos
   document.getElementById("song-url").value = "";
   document.getElementById("song-name").value = "";
 
-  alert("✅ Canción agregada correctamente");
+  alert("🎵 Canción agregada y reproduciéndose");
 }
-
-// --- Sincronizar lista de reproducción global ---
-db.ref('game/playlist').on('value', snap => {
-  const list = snap.val();
-  if (list) {
-    playlist.length = 0; // vaciamos la lista local
-    Object.values(list).forEach(song => playlist.push(song));
-    console.log("🎵 Lista sincronizada:", playlist);
-  }
-});
 </script>
 
 </body>
