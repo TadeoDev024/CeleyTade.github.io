@@ -132,17 +132,35 @@ function updateProgress(){
 
 // --- Botones ---
 function playerPressed(num) {
-  // Guardar quién presionó
-  db.ref('game/lastClick').set({ player: num, time: Date.now() });
-  
-  // 🔹 Pausar video globalmente
-  db.ref('game/play').set(false);
-}function resetButtons(){
-  db.ref('game/lastClick').set(null);
+  // Verificamos si ya hay alguien con prioridad
+  db.ref('game/lastClick').once('value').then(snapshot => {
+    if (snapshot.exists()) return; // si ya hay un click registrado, no deja seguir
+
+    // 🔹 Guardamos quién presionó primero
+    db.ref('game/lastClick').set({ player: num, time: Date.now() });
+
+    // 🔹 Pausar el video globalmente
+    db.ref('game/play').set(false);
+  });
 }
-db.ref('game/lastClick').on('value', snap=>{
-  const d=snap.val(); if(!d) return;
-  document.getElementById("message").innerText=d.player===1?"¡Cele presionó primero!":"¡Tade presionó primero!";
+function resetButtons() {
+  // 🔹 Borrar quién presionó primero
+  db.ref('game/lastClick').set(null);
+
+  // 🔹 Limpiar mensaje
+  document.getElementById("message").innerText = "";
+
+  // 🔹 Reanudar el video si estaba pausado
+  db.ref('game/play').set(true);
+}
+b.ref('game/lastClick').on('value', snap => {
+  const d = snap.val();
+  const msg = document.getElementById("message");
+  if (!d) {
+    msg.innerText = "";
+    return;
+  }
+  msg.innerText = d.player === 1 ? "¡Cele presionó primero!" : "¡Tade presionó primero!";
 });
 
 // --- Puntajes ---
