@@ -35,6 +35,12 @@ h1 { margin-bottom:20px; }
     <button onclick="togglePlay()">▶️ Play/Pause</button>
     <button onclick="nextSong()">⏭ Siguiente Canción</button>
     <button onclick="revealSong()">👀 Revelar Canción</button>
+      <div id="add-song" style="margin-top:20px; background:white; padding:15px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.2); width:320px;">
+    <h3>Agregar nueva canción 🎶</h3>
+    <input type="text" id="song-url" placeholder="URL de YouTube" style="width:100%; padding:8px; margin-bottom:8px;">
+    <input type="text" id="song-name" placeholder="Título (opcional)" style="width:100%; padding:8px; margin-bottom:8px;">
+    <button onclick="addSong()" style="padding:8px 16px; background-color:#2ecc71; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">Agregar</button>
+  </div>
   </div>
   <div id="progress-container">
     <div id="progress"></div>
@@ -158,6 +164,47 @@ function revealSong(){ db.ref('game/reveal').set(currentSong.title); }
 db.ref('game/reveal').on('value', s=>{
   const title=s.val();
   if(title) document.getElementById("song-title").innerText=title;
+});
+function extractYouTubeID(url) {
+  try {
+    const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+function addSong() {
+  const url = document.getElementById("song-url").value.trim();
+  const name = document.getElementById("song-name").value.trim() || "Canción Misteriosa";
+  const id = extractYouTubeID(url);
+
+  if (!id) {
+    alert("❌ URL de YouTube no válida");
+    return;
+  }
+
+  const newSong = { id, title: name };
+
+  // Guardamos la canción en Firebase
+  db.ref('game/playlist').push(newSong);
+
+  // Limpiamos los campos
+  document.getElementById("song-url").value = "";
+  document.getElementById("song-name").value = "";
+
+  alert("✅ Canción agregada correctamente");
+}
+
+// --- Sincronizar lista de reproducción global ---
+db.ref('game/playlist').on('value', snap => {
+  const list = snap.val();
+  if (list) {
+    playlist.length = 0; // vaciamos la lista local
+    Object.values(list).forEach(song => playlist.push(song));
+    console.log("🎵 Lista sincronizada:", playlist);
+  }
 });
 </script>
 
