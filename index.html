@@ -131,36 +131,44 @@ function updateProgress(){
 }
 
 // --- Botones ---
+// --- 🔹 Control de turnos ---
+let canPress = true;
+
+// Alguien presiona su botón
 function playerPressed(num) {
-  // Verificamos si ya hay alguien con prioridad
-  db.ref('game/lastClick').once('value').then(snapshot => {
-    if (snapshot.exists()) return; // si ya hay un click registrado, no deja seguir
+  if (!canPress) return; // si ya hay alguien que presionó, no hacer nada
 
-    // 🔹 Guardamos quién presionó primero
-    db.ref('game/lastClick').set({ player: num, time: Date.now() });
-
-    // 🔹 Pausar el video globalmente
-    db.ref('game/play').set(false);
+  // Registrar quién presionó y pausar video
+  db.ref('game/lastClick').set({
+    player: num,
+    time: Date.now()
   });
+  db.ref('game/play').set(false);
 }
+
+// Resetear el turno para volver a habilitar ambos botones
 function resetButtons() {
-  // 🔹 Borrar quién presionó primero
-  db.ref('game/lastClick').set(null);
-
-  // 🔹 Limpiar mensaje
-  document.getElementById("message").innerText = "";
-
-  // 🔹 Reanudar el video si estaba pausado
-  db.ref('game/play').set(true);
+  db.ref('game/lastClick').set(null); // borra en Firebase
+  db.ref('game/play').set(true); // vuelve a reproducir el video
 }
-b.ref('game/lastClick').on('value', snap => {
+
+// Escuchar cambios de turno desde Firebase
+db.ref('game/lastClick').on('value', snap => {
   const d = snap.val();
-  const msg = document.getElementById("message");
+
   if (!d) {
-    msg.innerText = "";
+    // Si no hay turno guardado, habilitar ambos y mostrar mensaje
+    canPress = true;
+    document.getElementById("message").innerText = "🎵 Nuevo turno: ¡a jugar!";
     return;
   }
-  msg.innerText = d.player === 1 ? "¡Cele presionó primero!" : "¡Tade presionó primero!";
+
+  // Si hay un jugador que presionó, mostrar quién fue
+  canPress = false;
+  document.getElementById("message").innerText =
+    d.player === 1
+      ? "💗 ¡Cele presionó primero! ⏸️"
+      : "💙 ¡Tade presionó primero! ⏸️";
 });
 
 // --- Puntajes ---
