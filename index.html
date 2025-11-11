@@ -24,10 +24,13 @@
     <button onclick="togglePlay()">▶️ Play/Pause</button>
     <button onclick="nextSong()">⏭ Siguiente Canción</button>
     <button onclick="revealSong()">👀 Revelar Canción</button>
-      <div id="add-song" style="margin-top:20px; background:white; padding:15px; border-radius:10px; width:320px;">
+      
+<div id="add-song">
     <h3>Agregar nueva canción 🎶</h3>
-    <input type="text" id="song-url" placeholder="URL de YouTube" style="width:100%; padding:8px; margin-bottom:8px;">
-    <input type="text" id="song-name" placeholder="Título (opcional)" style="width:100%; padding:8px; margin-bottom:8px;">
+    
+    <input type="text" id="song-url" placeholder="URL de YouTube">
+    <input type="text" id="song-name" placeholder="Título (opcional)">
+    
     <button onclick="addSong()" style="padding:8px 16px; background-color:#2ecc71; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">Agregar</button>
   </div>
   </div>
