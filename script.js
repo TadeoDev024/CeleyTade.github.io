@@ -23,6 +23,14 @@ let currentSong=playlist[0];
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('player', {
     videoId:currentSong.id,
+    
+    // --- ESTE ES EL CAMBIO ---
+    // Le decimos a la API que muestre los controles
+    playerVars: {
+      'controls': 1 // 1 = mostrar controles
+    },
+    // --- FIN DEL CAMBIO ---
+
     events:{ 'onReady':()=>player.pauseVideo(), 'onStateChange': syncProgress }
   });
 }
@@ -81,7 +89,6 @@ db.ref('game/lastClick').on('value', snap => {
 
 // --- Puntajes ---
 function addPoint(n){ db.ref('game/score'+n).set((n===1?++score1:++score2)); }
-// CORREGIDO:
 function subtractPoint(n){ db.ref('game/score'+n).set((n===1?--score1:--score2)); }
 db.ref('game/score1').on('value', s=>{score1=s.val()||0; document.getElementById("score1").innerText=score1;});
 db.ref('game/score2').on('value', s=>{score2=s.val()||0; document.getElementById("score2").innerText=score2;});
@@ -125,7 +132,6 @@ function extractYouTubeID(url) {
 
 
 // --- Agregar nueva canción ---
-// (Esta función se queda porque la usa el formulario de ARRIBA)
 function addSong() {
   const url = document.getElementById("song-url").value.trim();
   const name = document.getElementById("song-name").value.trim() || "Canción Misteriosa";
@@ -149,9 +155,6 @@ function addSong() {
   document.getElementById("song-url").value = "";
   document.getElementById("song-name").value = "";
 }
-
-// --- Limpiar playlist ---
-// (Función y listener eliminados porque borramos el botón)
 
 // --- Sincronizar playlist desde Firebase ---
 db.ref('playlist').on('value', snap => {
