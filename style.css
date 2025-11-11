@@ -1,0 +1,165 @@
+/* ---- Estilo "Cute 2000s" ---- */
+
+body {
+  /* NUEVO: Fuente pixelada para todo */
+  font-family: 'VT323', monospace;
+  text-align: center;
+  
+  /* NUEVO: Fondo rosa pastel */
+  background-color: #fff0f5; 
+  
+  /* OPCIONAL: Fondo con imagen GIF (reemplaza la URL) */
+  /* background-image: url('URL_DE_TU_GIF_REPETIDO.gif'); */
+  /* background-repeat: repeat; */
+  
+  /* NUEVO: Cursor personalizado (reemplaza la URL por una imagen .cur o .png) */
+  /* cursor: url('URL_DE_TU_CURSOR.cur'), auto; */
+  
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 20px;
+  /* NUEVO: Sombra de texto rosa */
+  text-shadow: 2px 2px #fcc7ef;
+  font-size: 40px; /* Hacemos la fuente un poco más grande */
+}
+
+.player-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+}
+
+.player-btn {
+  flex: 1;
+  margin: 10px;
+  padding: 30px;
+  font-size: 30px; /* Letra más grande */
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+  
+  /* NUEVO: Borde estilo 2000s */
+  border: 3px solid white;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+
+#player1-btn { background-color: #fcc7ef; }
+#player2-btn { background-color: #9bd6f8; }
+
+#message {
+  font-size: 24px; /* Letra más grande */
+  margin: 15px 0;
+  font-weight: bold;
+}
+
+.scores {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.score-box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  
+  /* CAMBIADO: Quitamos sombra y ponemos borde "cute" */
+  box-shadow: none;
+  border: 4px dashed #fcc7ef; /* Borde rosa punteado */
+  
+  width: 200px;
+}
+
+.score-box h2 {
+  margin: 5px 0;
+  font-size: 28px; /* Letra más grande */
+}
+
+.score-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.score-btn {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px;
+  font-size: 20px; /* Letra más grande */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+}
+
+/* NUEVO: Aplicar la fuente pixel a todos los botones */
+button, .score-btn, .player-btn {
+   font-family: 'VT323', monospace;
+}
+
+.add { background-color: #2ecc71; }
+.subtract { background-color: #e67e22; }
+
+#controls {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#progress-container {
+  width: 300px;
+  height: 10px;
+  background: #ccc;
+  border-radius: 5px;
+  margin-top: 10px;
+  overflow: hidden;
+  /* NUEVO: Borde para la barra */
+  border: 2px solid white;
+}
+
+#progress {
+  height: 100%;
+  width: 0;
+  background: #fcc7ef; /* Progreso en rosa */
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+#yt-player-container {
+  width: 560px;
+  height: 315px;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  
+  /* CAMBIADO: Borde rosa en lugar de sombra */
+  box-shadow: none;
+  border: 5px solid #fcc7ef;
+}
+
+#song-title {
+  font-size: 22px; /* Letra más grande */
+  font-weight: bold;
+  margin-top: 10px;
+  filter: blur(5px);
+}
+
+/* Aplicar bordes "cute" a los otros widgets */
+#add-song, #playlist-container {
+   border: 4px dashed #9bd6f8; /* Borde azul */
+   box-shadow: none !important;
+}
+
+/* Estilo para inputs */
+input[type="text"] {
+    border: 2px dashed #ccc;
+    padding: 8px;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+}

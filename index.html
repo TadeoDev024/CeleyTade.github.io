@@ -3,46 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <title>Te amo mi bichita</title>
-<style>
-body { font-family: Arial, sans-serif; text-align:center; background:#f2f2f2; margin:0; padding:20px; }
-h1 { margin-bottom:20px; }
-.player-buttons { display:flex; justify-content:space-around; margin:20px 0; }
-.player-btn { flex:1; margin:10px; padding:30px; font-size:24px; font-weight:bold; border:none; border-radius:15px; cursor:pointer; color:white; }
-#player1-btn { background-color:#fcc7ef; }
-#player2-btn { background-color:#9bd6f8; }
-#message { font-size:20px; margin:15px 0; font-weight:bold; }
-.scores { display:flex; justify-content:space-around; margin-top:20px; }
-.score-box { background:white; padding:15px; border-radius:10px; box-shadow:0px 3px 6px rgba(0,0,0,0.2); width:200px; }
-.score-box h2 { margin:5px 0; }
-.score-buttons { display:flex; justify-content:space-between; margin-top:10px; }
-.score-btn { flex:1; margin:0 5px; padding:10px; font-size:16px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; color:white; }
-.add { background-color:#2ecc71; }
-.subtract { background-color:#e67e22; }
 
-#controls { margin:20px 0; display:flex; flex-direction:column; align-items:center; }
-#progress-container { width:300px; height:10px; background:#ccc; border-radius:5px; margin-top:10px; overflow:hidden; }
-#progress { height:100%; width:0; background:#2ecc71; border-radius:5px; transition: width 0.1s linear; }
-#yt-player-container {
-  width: 560px;
-  height: 315px;
-  margin: 20px auto;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-}
-#song-title { font-size:18px; font-weight:bold; margin-top:10px; filter:blur(5px); }
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
-<h1>🎵💕 Adivina la cancion con Cele y Tade 💕🎵</h1>
+<h1>
+  <img src="https:&#x2F;&#x2F;media.tenor.com&#x2F;E3_eB0i_W-0AAAAi&#x2F;hello-kitty.gif" style="height:40px; vertical-align:middle;">
+  🎵💕 Adivina la cancion con Cele y Tade 💕🎵
+  <img src="https:&#x2F;&#x2F;media.tenor.com&#x2F;E3_eB0i_W-0AAAAi&#x2F;hello-kitty.gif" style="height:40px; vertical-align:middle;">
+</h1>
 
 <div id="controls">
   <div>
     <button onclick="togglePlay()">▶️ Play/Pause</button>
     <button onclick="nextSong()">⏭ Siguiente Canción</button>
     <button onclick="revealSong()">👀 Revelar Canción</button>
-      <div id="add-song" style="margin-top:20px; background:white; padding:15px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.2); width:320px;">
+      <div id="add-song" style="margin-top:20px; background:white; padding:15px; border-radius:10px; width:320px;">
     <h3>Agregar nueva canción 🎶</h3>
     <input type="text" id="song-url" placeholder="URL de YouTube" style="width:100%; padding:8px; margin-bottom:8px;">
     <input type="text" id="song-name" placeholder="Título (opcional)" style="width:100%; padding:8px; margin-bottom:8px;">
@@ -84,206 +66,26 @@ h1 { margin-bottom:20px; }
 </div>
 <div id="song-manager" style="display:flex; justify-content:center; gap:20px; margin-top:20px; flex-wrap:wrap;">
 
-  <!-- 🔹 Formulario para agregar canción -->
-  <div id="add-song" style="background:white; padding:15px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.2); width:300px;">
+  <div id="add-song" style="background:white; padding:15px; border-radius:10px; width:300px;">
     <h3>Agregar nueva canción 🎶</h3>
     <input type="text" id="song-url" placeholder="URL de YouTube" style="width:100%; padding:8px; margin-bottom:8px;">
     <input type="text" id="song-name" placeholder="Título (opcional)" style="width:100%; padding:8px; margin-bottom:8px;">
     <button onclick="addSong()" style="padding:8px 16px; background-color:#2ecc71; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">Agregar</button>
   </div>
 
-  <!-- 🔹 Lista de reproducción -->
-  <div id="playlist-container" style="background:white; padding:15px; border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,0.2); width:300px; max-height:350px; overflow-y:auto;">
+  <div id="playlist-container" style="background:white; padding:15px; border-radius:10px; width:300px; max-height:350px; overflow-y:auto;">
     <h3>Playlist</h3>
     <ul id="playlist" style="list-style:none; padding-left:0; margin:0;"></ul>
     <button id="clearPlaylistBtn" style="margin-top:10px; padding:6px 12px; background-color:#e74c3c; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">🗑️ Limpiar playlist</button>
   </div>
 </div>
 
-<!-- 🔥 Firebase + YouTube -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey:"AIzaSyDnm7xpjFtaqwYeCRJG0ms8QR7J9k010Tk",
-  authDomain:"juegoadivinalacancion-5152e.firebaseapp.com",
-  projectId:"juegoadivinalacancion-5152e",
-  storageBucket:"juegoadivinalacancion-5152e.firebasestorage.app",
-  messagingSenderId:"543704119927",
-  appId:"1:543704119927:web:613939b3ffee9dab25e472",
-  measurementId:"G-TYSK5TJCMZ"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-let score1=0, score2=0, isPlaying=false;
-let player;
-const playlist=[
-  {id:"dQw4w9WgXcQ", title:"Canción Misteriosa 1"},
-  {id:"3JZ4pnNtyxQ", title:"Canción Misteriosa 2"},
-  {id:"L_jWHffIx5E", title:"Canción Misteriosa 3"}
-];
-let currentSong=playlist[0];
-
-// --- YouTube API ---
-function onYouTubeIframeAPIReady(){
-  player = new YT.Player('player', {
-    videoId:currentSong.id,
-    events:{ 'onReady':()=>player.pauseVideo(), 'onStateChange': syncProgress }
-  });
-}
-
-function syncProgress(event){
-  if(event.data === YT.PlayerState.PLAYING) updateProgress();
-}
-function updateProgress(){
-  if(player && player.getCurrentTime){
-    const pct=(player.getCurrentTime()/player.getDuration())*100;
-    document.getElementById("progress").style.width=pct+"%";
-    if(isPlaying) requestAnimationFrame(updateProgress);
-  }
-}
-
-// --- Botones ---
-// --- 🔹 Control de turnos ---
-let canPress = true;
-
-// Alguien presiona su botón
-function playerPressed(num) {
-  if (!canPress) return; // si ya hay alguien que presionó, no hacer nada
-
-  // Registrar quién presionó y pausar video
-  db.ref('game/lastClick').set({
-    player: num,
-    time: Date.now()
-  });
-  db.ref('game/play').set(false);
-}
-
-// Resetear el turno para volver a habilitar ambos botones
-function resetButtons() {
-  db.ref('game/lastClick').set(null); // borra en Firebase
-  db.ref('game/play').set(true); // vuelve a reproducir el video
-}
-
-// Escuchar cambios de turno desde Firebase
-db.ref('game/lastClick').on('value', snap => {
-  const d = snap.val();
-
-  if (!d) {
-    // Si no hay turno guardado, habilitar ambos y mostrar mensaje
-    canPress = true;
-    document.getElementById("message").innerText = "🎵 Nuevo turno: ¡a jugar!";
-    return;
-  }
-
-  // Si hay un jugador que presionó, mostrar quién fue
-  canPress = false;
-  document.getElementById("message").innerText =
-    d.player === 1
-      ? "💗 ¡Cele presionó primero! ⏸️"
-      : "💙 ¡Tade presionó primero! ⏸️";
-});
-function clearPlaylist() {
-  if (confirm("¿Seguro que querés borrar TODA la lista de reproducción?")) {
-    db.ref('playlist').set(null); // Borra todos los datos en Firebase
-    document.getElementById("playlist").innerHTML = ""; // Limpia la lista visual
-    document.getElementById("message").innerText = "🧹 Lista de reproducción vaciada";
-  }
-}
-// --- Puntajes ---
-function addPoint(n){ db.ref('game/score'+n).set((n===1?++score1:++score2)); }
-function subtractPoint(n){ db.ref('game/score'+n).set((n===1?--score1:--score2)); }
-db.ref('game/score1').on('value', s=>{score1=s.val()||0; document.getElementById("score1").innerText=score1;});
-db.ref('game/score2').on('value', s=>{score2=s.val()||0; document.getElementById("score2").innerText=score2;});
-
-// --- Sincronizar Reproductor ---
-function togglePlay(){ db.ref('game/play').set(!isPlaying); }
-db.ref('game/play').on('value', s=>{
-  const v=s.val();
-  if(player){
-    if(v) player.playVideo(); else player.pauseVideo();
-    isPlaying=v;
-  }
-});
-
-function nextSong(){
-  const next=playlist[Math.floor(Math.random()*playlist.length)];
-  db.ref('game/song').set(next);
-}
-db.ref('game/song').on('value', s=>{
-  const v=s.val(); if(!v) return;
-  currentSong=v;
-  if(player) player.loadVideoById(currentSong.id);
-  document.getElementById("song-title").innerText="";
-});
-
-function revealSong(){ db.ref('game/reveal').set(currentSong.title); }
-db.ref('game/reveal').on('value', s=>{
-  const title=s.val();
-  if(title) document.getElementById("song-title").innerText=title;
-});
-// --- Extraer ID de YouTube ---
-function extractYouTubeID(url) {
-  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-}
-
-// --- Agregar nueva canción ---
-function addSong() {
-  const url = document.getElementById("song-url").value.trim();
-  const name = document.getElementById("song-name").value.trim() || "Canción Misteriosa";
-  const id = extractYouTubeID(url);
-
-  if (!id) {
-    alert("❌ URL de YouTube no válida");
-    return;
-  }
-
-  const newSong = { id, title: name };
-
-  // Guardar en Firebase playlist
-  db.ref('playlist').push(newSong);
-
-  // Actualizar video actual y reproducir
-  db.ref('game/song').set(newSong);
-  db.ref('game/play').set(true);
-
-  // Limpiar campos
-  document.getElementById("song-url").value = "";
-  document.getElementById("song-name").value = "";
-}
-
-// --- Limpiar playlist ---
-function clearPlaylist() {
-  if (confirm("¿Seguro que querés borrar toda la lista de reproducción?")) {
-    db.ref('playlist').set(null);
-    document.getElementById("playlist").innerHTML = "";
-    document.getElementById("message").innerText = "🧹 Playlist vaciada";
-  }
-}
-
-// Conectar botón de limpiar
-document.getElementById("clearPlaylistBtn").addEventListener("click", clearPlaylist);
-
-// --- Sincronizar playlist desde Firebase ---
-db.ref('playlist').on('value', snap => {
-  const list = snap.val();
-  const ul = document.getElementById("playlist");
-  ul.innerHTML = "";
-  if (list) {
-    Object.values(list).forEach(song => {
-      const li = document.createElement("li");
-      li.innerText = song.title;
-      ul.appendChild(li);
-    });
-  }
-});
-</script>
+<script src="script.js"></script>
 
 </body>
 </html>
