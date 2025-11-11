@@ -78,16 +78,11 @@ db.ref('game/lastClick').on('value', snap => {
       ? "💗 ¡Cele presionó primero! ⏸️"
       : "💙 ¡Tade presionó primero! ⏸️";
 });
-function clearPlaylist() {
-  if (confirm("¿Seguro que querés borrar TODA la lista de reproducción?")) {
-    db.ref('playlist').set(null); // Borra todos los datos en Firebase
-    document.getElementById("playlist").innerHTML = ""; // Limpia la lista visual
-    document.getElementById("message").innerText = "🧹 Lista de reproducción vaciada";
-  }
-}
+
 // --- Puntajes ---
 function addPoint(n){ db.ref('game/score'+n).set((n===1?++score1:++score2)); }
-function subtractPoint(n){ db.AF('game/score'+n).set((n===1?--score1:--score2)); }
+// CORREGIDO:
+function subtractPoint(n){ db.ref('game/score'+n).set((n===1?--score1:--score2)); }
 db.ref('game/score1').on('value', s=>{score1=s.val()||0; document.getElementById("score1").innerText=score1;});
 db.ref('game/score2').on('value', s=>{score2=s.val()||0; document.getElementById("score2").innerText=score2;});
 
@@ -125,6 +120,7 @@ function extractYouTubeID(url) {
 }
 
 // --- Agregar nueva canción ---
+// (Esta función se queda porque la usa el formulario de ARRIBA)
 function addSong() {
   const url = document.getElementById("song-url").value.trim();
   const name = document.getElementById("song-name").value.trim() || "Canción Misteriosa";
@@ -150,16 +146,7 @@ function addSong() {
 }
 
 // --- Limpiar playlist ---
-function clearPlaylist() {
-  if (confirm("¿Seguro que querés borrar toda la lista de reproducción?")) {
-    db.ref('playlist').set(null);
-    document.getElementById("playlist").innerHTML = "";
-    document.getElementById("message").innerText = "🧹 Playlist vaciada";
-  }
-}
-
-// Conectar botón de limpiar
-document.getElementById("clearPlaylistBtn").addEventListener("click", clearPlaylist);
+// (Función y listener eliminados porque borramos el botón)
 
 // --- Sincronizar playlist desde Firebase ---
 db.ref('playlist').on('value', snap => {

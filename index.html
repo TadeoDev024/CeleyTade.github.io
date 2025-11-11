@@ -64,20 +64,13 @@
     </div>
   </div>
 </div>
-<div id="song-manager" style="display:flex; justify-content:center; gap:20px; margin-top:20px; flex-wrap:wrap;">
 
-  <div id="add-song" style="background:white; padding:15px; border-radius:10px; width:300px;">
-    <h3>Agregar nueva canción 🎶</h3>
-    <input type="text" id="song-url" placeholder="URL de YouTube" style="width:100%; padding:8px; margin-bottom:8px;">
-    <input type="text" id="song-name" placeholder="Título (opcional)" style="width:100%; padding:8px; margin-bottom:8px;">
-    <button onclick="addSong()" style="padding:8px 16px; background-color:#2ecc71; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">Agregar</button>
-  </div>
+<div id="song-manager" style="display:flex; justify-content:center; gap:20px; margin-top:20px; flex-wrap:wrap;">
 
   <div id="playlist-container" style="background:white; padding:15px; border-radius:10px; width:300px; max-height:350px; overflow-y:auto;">
     <h3>Playlist</h3>
     <ul id="playlist" style="list-style:none; padding-left:0; margin:0;"></ul>
-    <button id="clearPlaylistBtn" style="margin-top:10px; padding:6px 12px; background-color:#e74c3c; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">🗑️ Limpiar playlist</button>
-  </div>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
