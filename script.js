@@ -161,3 +161,5 @@ db.ref('playlist').on('value', snap => {
     });
   }
 });
+
+// (EL '}' EXTRA QUE ESTABA AQUÍ FUE ELIMINADO)
