@@ -112,12 +112,17 @@ db.ref('game/reveal').on('value', s=>{
   const title=s.val();
   if(title) document.getElementById("song-title").innerText=title;
 });
-// --- Extraer ID de YouTube ---
+
+
+// --- FUNCIÓN MEJORADA ---
+// Esta nueva función SÍ acepta links de shorts, embed y otros
 function extractYouTubeID(url) {
-  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
 }
+// --- FIN DE LA FUNCIÓN MEJORADA ---
+
 
 // --- Agregar nueva canción ---
 // (Esta función se queda porque la usa el formulario de ARRIBA)
@@ -127,7 +132,7 @@ function addSong() {
   const id = extractYouTubeID(url);
 
   if (!id) {
-    alert("❌ URL de YouTube no válida");
+    alert("❌ URL de YouTube no válida. ¡Intenta con otro link!");
     return;
   }
 
@@ -161,5 +166,3 @@ db.ref('playlist').on('value', snap => {
     });
   }
 });
-
-// (EL '}' EXTRA QUE ESTABA AQUÍ FUE ELIMINADO)
