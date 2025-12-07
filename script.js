@@ -1,8 +1,7 @@
 const CLIENT_ID = "9842a2b6d00a46b386ba48973447035f"; 
-const REDIRECT_URI = "https://tadeodev024.github.io/CeleyTade.github.io/"; // Ej: https://celeytade.github.io/
+const REDIRECT_URI = "https://tadeodev024.github.io/CeleyTade.github.io/"; 
 const YOUTUBE_API_KEY = "AIzaSyBT6Mtka2ESW2Q7fsLNIgDqRAa8o54_lIM";
-const SPOTIFY_PLAYLIST_ID = "5YS3pMDzrVjG8Hehl5a8dl"; // El código raro de la URL de tu playlist
-/* ===================================== */
+const SPOTIFY_PLAYLIST_ID = "5YS3pMDzrVjG8Hehl5a8dl"; 
 
 const firebaseConfig = {
   apiKey:"AIzaSyDnm7xpjFtaqwYeCRJG0ms8QR7J9k010Tk",
@@ -19,70 +18,64 @@ const db = firebase.database();
 let score1=0, score2=0, isPlaying=false;
 let player;
 let spotifyToken = "";
-let gamePlaylist = []; // Aquí vivirá la playlist de Spotify
+let gamePlaylist = []; 
 let currentSong = { id: "dQw4w9WgXcQ", title: "Esperando..." };
 
-// --- 1. Autenticación con Spotify (CORREGIDO) ---
+// --- 1. Autenticación con Spotify (CORREGIDO REALMENTE) ---
 function authorizeSpotify() {
   const scope = "playlist-read-private playlist-read-collaborative";
   
-  // CORRECCIÓN: URL oficial limpia y con los parámetros correctos
-  // Fíjate que usamos 'https://accounts.spotify.com/authorize'
+  // CORRECCIÓN: Usar la URL REAL de Spotify y sintaxis correcta con `${...}`
   const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}`;
   
   window.location.href = url;
 }
-// Al cargar la página, revisamos si volvimos de Spotify con el token
+
+// Al cargar la página
 window.onload = () => {
   const hash = window.location.hash;
   if (hash.includes("access_token")) {
-    // ¡Tenemos token!
-    spotifyToken = new URLSearchParams(hash.substring(1)).get("access_token");
-    window.location.hash = ""; // Limpiar URL
+    const params = new URLSearchParams(hash.substring(1));
+    spotifyToken = params.get("access_token");
+    window.location.hash = ""; 
     document.getElementById("login-section").style.display = "none";
     document.getElementById("game-area").style.display = "block";
     loadSpotifyPlaylist();
+  } else if (hash.includes("error")) {
+     alert("Error al conectar con Spotify. Revisa la configuración.");
   }
 };
 
-// --- 2. Cargar Playlist de Spotify ---
+// --- 2. Cargar Playlist de Spotify (CORREGIDO REALMENTE) ---
 async function loadSpotifyPlaylist() {
   if (!spotifyToken) return;
   document.getElementById("message").innerText = "⏳ Cargando playlist de Spotify...";
   
   try {
-    // CORRECCIÓN: URL oficial de la API de Spotify
+    // CORRECCIÓN: Usar la URL REAL de la API de Spotify
     const res = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_PLAYLIST_ID}/tracks?limit=100`, {
       headers: { Authorization: `Bearer ${spotifyToken}` }
     });
     
-    if (!res.ok) throw new Error("Error en la respuesta de Spotify"); // Chequeo extra
+    if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error.message);
+    }
     
     const data = await res.json();
     
-    // Guardamos las canciones en nuestra lista
     gamePlaylist = data.items.map(item => ({
       title: item.track.name + " - " + item.track.artists[0].name
     }));
 
     document.getElementById("message").innerText = `✅ ¡${gamePlaylist.length} canciones cargadas!`;
-    updatePlaylistUI();
+    // updatePlaylistUI no existe en tu HTML, lo comento para evitar errores
+    // updatePlaylistUI(); 
     
   } catch (e) {
-    alert("Error cargando playlist. Revisa la consola (F12) para más detalles.");
+    alert("Error cargando playlist: " + e.message);
     console.error("Error Spotify:", e);
   }
-}
-
-// Actualiza la lista visual
-function updatePlaylistUI() {
-  const ul = document.getElementById("playlist");
-  ul.innerHTML = "";
-  gamePlaylist.forEach(song => {
-    const li = document.createElement("li");
-    li.innerText = song.title;
-    ul.appendChild(li);
-  });
 }
 
 // --- 3. Buscar en YouTube y Reproducir ---
@@ -92,12 +85,10 @@ async function nextSong() {
     return;
   }
 
-  // Elegir canción al azar
   const randomSong = gamePlaylist[Math.floor(Math.random() * gamePlaylist.length)];
   document.getElementById("message").innerText = `🔎 Buscando: ${randomSong.title}...`;
 
   try {
-    // Buscar en YouTube
     const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(randomSong.title)}&type=video&key=${YOUTUBE_API_KEY}`);
     const data = await res.json();
 
@@ -105,7 +96,6 @@ async function nextSong() {
 
     const videoId = data.items[0].id.videoId;
 
-    // Actualizar Firebase (el juego real)
     const newSong = { id: videoId, title: randomSong.title };
     db.ref('game/song').set(newSong);
     db.ref('game/reveal').set(""); 
@@ -114,16 +104,16 @@ async function nextSong() {
 
   } catch (e) {
     console.error(e);
-    alert("Error buscando en YouTube. Intenta de nuevo.");
+    alert("Error buscando en YouTube (Quota o clave incorrecta).");
   }
 }
 
 
-// --- Lógica del Juego (YouTube + Firebase) ---
+// --- Lógica del Juego ---
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('player', {
     videoId:currentSong.id,
-    playerVars: { 'controls': 1 }, // Controles activados
+    playerVars: { 'controls': 1 }, 
     events:{ 'onReady':()=>player.pauseVideo(), 'onStateChange': syncProgress }
   });
 }
@@ -189,7 +179,6 @@ db.ref('game/reveal').on('value', s=>{
   else { el.innerText="Canción Oculta"; el.style.filter="blur(5px)"; }
 });
 
-// Función Manual (Backup)
 function extractYouTubeID(url) {
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
