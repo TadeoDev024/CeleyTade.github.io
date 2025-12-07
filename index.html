@@ -2,69 +2,78 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Te amo Celeste ♥</title>
+<title>Te amo mi bichita</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
 <h1>
-  <img src="https://media.tenor.com/E3_eB0i_W-0AAAAi/hello-kitty.gif" style="height:40px; vertical-align:middle;">
-  🎵💕 Adivina la canción: Cele y Tade 💕🎵
-  <img src="https://media.tenor.com/E3_eB0i_W-0AAAAi/hello-kitty.gif" style="height:40px; vertical-align:middle;">
+  <img src="https:&#x2F;&#x2F;media.tenor.com&#x2F;E3_eB0i_W-0AAAAi&#x2F;hello-kitty.gif" style="height:40px; vertical-align:middle;">
+  🎵💕 Adivina la cancion con Cele y Tade 💕🎵
+  <img src="https:&#x2F;&#x2F;media.tenor.com&#x2F;E3_eB0i_W-0AAAAi&#x2F;hello-kitty.gif" style="height:40px; vertical-align:middle;">
 </h1>
 
-<div id="game-area">
+<div id="controls">
+  <div>
+    <button onclick="togglePlay()">▶️ Play/Pause</button>
+    <button onclick="nextSong()">⏭ Siguiente Canción</button>
+      
+<div id="add-song">
+    <h3>Agregar nueva canción 🎶</h3>
+    
+    <input type="text" id="song-url" placeholder="URL de YouTube">
+    <input type="text" id="song-name" placeholder="Título (opcional)">
+    
+    <button onclick="addSong()" style="padding:8px 16px; background-color:#2ecc71; border:none; border-radius:8px; color:white; font-weight:bold; cursor:pointer;">Agregar</button>
+  </div>
+  </div>
+  <div id="progress-container">
+    <div id="progress"></div>
+  </div>
+</div>
 
-  <div id="controls">
-    <div class="input-group">
-      <h3>Pegar Link de YouTube 🔗</h3>
-      <input type="text" id="song-url" placeholder="Ej: https://youtu.be/dQw4w9WgXcQ" autocomplete="off">
-      <button onclick="addSong()" class="action-btn" style="background:#2ecc71;">Cargar Canción</button>
-    </div>
+<div id="yt-player-container">
+  <div id="player"></div>
+</div>
 
-    <div class="control-buttons">
-      <button onclick="togglePlay()" class="action-btn">▶️ Play/Pause Global</button>
+<div class="player-buttons">
+  <button id="player1-btn" class="player-btn" onclick="playerPressed(1)">Cele</button>
+  <button id="player2-btn" class="player-btn" onclick="playerPressed(2)">Tade</button>
+</div>
+<button id="reset-btn" onclick="resetButtons()">Resetear Turno</button>
+<div id="message"></div>
+<div id="song-title"></div>
+
+<div class="scores">
+  <div class="score-box">
+    <h2>Cele: <span id="score1">0</span></h2>
+    <div class="score-buttons">
+      <button class="score-btn add" onclick="addPoint(1)">+1</button>
+      <button class="score-btn subtract" onclick="subtractPoint(1)">-1</button>
     </div>
   </div>
-
-  <div id="yt-player-wrapper">
-    <div id="player"></div>
-    </div>
-
-  <div class="player-buttons">
-    <button id="player1-btn" class="player-btn" onclick="playerPressed(1)">Cele</button>
-    <button id="player2-btn" class="player-btn" onclick="playerPressed(2)">Tade</button>
-  </div>
-  
-  <button id="reset-btn" onclick="resetButtons()">🔄 Resetear Turno</button>
-  
-  <div id="message">Esperando canción...</div>
-
-  <div class="scores">
-    <div class="score-box">
-      <h2>Cele: <span id="score1">0</span></h2>
-      <div class="score-buttons">
-        <button class="score-btn add" onclick="addPoint(1)">+1</button>
-        <button class="score-btn subtract" onclick="subtractPoint(1)">-1</button>
-      </div>
-    </div>
-    <div class="score-box">
-      <h2>Tade: <span id="score2">0</span></h2>
-      <div class="score-buttons">
-        <button class="score-btn add" onclick="addPoint(2)">+1</button>
-        <button class="score-btn subtract" onclick="subtractPoint(2)">-1</button>
-      </div>
+  <div class="score-box">
+    <h2>Tade: <span id="score2">0</span></h2>
+    <div class="score-buttons">
+      <button class="score-btn add" onclick="addPoint(2)">+1</button>
+      <button class="score-btn subtract" onclick="subtractPoint(2)">-1</button>
     </div>
   </div>
+</div>
 
-</div> 
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
+
 <script src="script.js"></script>
 
 </body>

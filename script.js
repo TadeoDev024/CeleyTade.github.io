@@ -1,4 +1,5 @@
 // --- CONFIGURACIÓN FIREBASE ---
+// (Tu configuración no cambia)
 const firebaseConfig = {
   apiKey:"AIzaSyDnm7xpjFtaqwYeCRJG0ms8QR7J9k010Tk",
   authDomain:"juegoadivinalacancion-5152e.firebaseapp.com",
@@ -11,21 +12,21 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- VARIABLES ---
+// --- VARIABLES GLOBALES ---
 let player; 
 let currentSongId = "";
 let score1 = 0;
 let score2 = 0;
 
-// --- YOUTUBE API ---
+// --- FUNCIONES YOUTUBE ---
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('player', {
     height: '100%', 
     width: '100%',
     videoId: '', 
     playerVars: { 
-      'controls': 1,      // Permitir ver controles
-      'disablekb': 0,     // Permitir teclado
+      'controls': 1, 
+      'disablekb': 1, 
       'rel': 0,
       'modestbranding': 1
     }, 
@@ -37,26 +38,31 @@ function onYouTubeIframeAPIReady(){
 }
 
 function onPlayerReady(event) {
-  // Cargar canción inicial si existe
+  // Al cargar, revisamos si ya hay una canción guardada
   db.ref('game/song').once('value', s => {
       const id = s.val();
       if(id) {
           currentSongId = id;
           player.loadVideoById(currentSongId);
+          // Verificar si debería estar sonando
+          db.ref('game/play').once('value', p => {
+             if(!p.val()) player.pauseVideo();
+          });
       }
   });
 }
 
-// Detectar si el video termina solo
 function onPlayerStateChange(event) {
+    // Si el video termina, avisamos a la base de datos
     if (event.data === YT.PlayerState.ENDED) {
-        db.ref('game/status').update({ isPlaying: false });
+        db.ref('game/play').set(false);
     }
 }
 
-// --- LOGICA DE JUEGO ---
+// --- LOGICA DE JUEGO (Recibir Video) ---
 
 function extractYouTubeID(url) {
+  // Esta es la expresión regular "todoterreno" que funciona mejor
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
@@ -66,68 +72,47 @@ function addSong() {
   const url = document.getElementById("song-url").value.trim();
   const id = extractYouTubeID(url);
   
-  if (!id) return alert("❌ Link inválido.");
+  if (!id) return alert("❌ Link inválido. Usa un link normal de YouTube.");
   
-  // Guardar nueva canción
+  // 1. Subir ID de la canción (Lógica simple)
   db.ref('game/song').set(id);
-  // Resetear turnos
+  // 2. Resetear turnos
   db.ref('game/lastClick').set(null);
-  // Iniciar reproducción desde 0
-  db.ref('game/status').set({
-      isPlaying: true,
-      timestamp: 0 
-  });
+  // 3. Dar Play automático (Usando el sistema simple de true/false)
+  db.ref('game/play').set(true);
 
+  // Limpiar el input
   document.getElementById("song-url").value = "";
 }
 
-// --- SINCRONIZACIÓN AVANZADA ---
+// --- ESCUCHAS DE FIREBASE ---
 
-// 1. Escuchar cambio de canción
+// 1. Cambio de Canción
 db.ref('game/song').on('value', s=>{
   const id = s.val(); 
   if(!id) return;
+  
   currentSongId = id;
+  // Solo cargamos el video, sin inventos raros de tiempo
   if(player && player.loadVideoById) {
       player.loadVideoById(currentSongId);
   }
-  document.getElementById("message").innerText = "🎶 Nueva canción cargada...";
+  document.getElementById("message").innerText = "🎶 Canción lista...";
 });
 
-// 2. Play/Pause con TIEMPO
+// 2. Play/Pause (Simple)
 function togglePlay(){ 
-    if(!player || !player.getCurrentTime) return;
-
-    db.ref('game/status').once('value', s => {
-        const status = s.val() || { isPlaying: false };
-        const newExito = !status.isPlaying;
-        const currentTime = player.getCurrentTime(); // Tomar tiempo actual
-
-        // Enviar a Firebase: "Ponte en Play/Pause en el segundo X"
-        db.ref('game/status').set({
-            isPlaying: newExito,
-            timestamp: currentTime
-        });
+    db.ref('game/play').once('value', s => {
+        db.ref('game/play').set(!s.val());
     });
 }
 
-// Escuchar cambios de estado (Play/Pause/Tiempo)
-db.ref('game/status').on('value', s=>{
-  const status = s.val();
-  if(!status || !player || !player.seekTo) return;
+db.ref('game/play').on('value', s=>{
+  const shouldPlay = s.val();
   
-  // Si Firebase dice que hay que reproducir
-  if(status.isPlaying) {
-      // Importante: Saltamos al segundo que dice Firebase
-      // para que ambos estén igualados.
-      // (Solo si la diferencia es grande para evitar saltos pequeños)
-      const diff = Math.abs(player.getCurrentTime() - status.timestamp);
-      if(diff > 1) {
-          player.seekTo(status.timestamp);
-      }
-      player.playVideo();
-  } else {
-      player.pauseVideo();
+  if(player && player.playVideo) {
+    if(shouldPlay) player.playVideo(); 
+    else player.pauseVideo();
   }
 });
 
@@ -135,23 +120,14 @@ db.ref('game/status').on('value', s=>{
 let canPress = true;
 function playerPressed(num) {
   if (!canPress) return; 
-  
+  // Guardar quién fue y PAUSAR
   db.ref('game/lastClick').set({ player: num });
-  
-  // Pausar para todos
-  if(player) {
-      db.ref('game/status').update({
-          isPlaying: false,
-          timestamp: player.getCurrentTime()
-      });
-  }
+  db.ref('game/play').set(false);
 }
 
 function resetButtons() {
   db.ref('game/lastClick').set(null);
   document.getElementById("message").innerText = "🔄 ¡Sigan jugando!";
-  // Opcional: Auto-play al resetear
-  // togglePlay(); 
 }
 
 db.ref('game/lastClick').on('value', snap => {
