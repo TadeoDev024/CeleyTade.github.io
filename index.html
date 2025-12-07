@@ -23,6 +23,7 @@
   <div>
     <button onclick="togglePlay()">▶️ Play/Pause</button>
     <button onclick="nextSong()">⏭ Siguiente Canción</button>
+    <button onclick="revealSong()">👀 Revelar Canción</button>
       
 <div id="add-song">
     <h3>Agregar nueva canción 🎶</h3>
@@ -67,6 +68,12 @@
   </div>
 </div>
 
+<div id="song-manager" style="display:flex; justify-content:center; gap:20px; margin-top:20px; flex-wrap:wrap;">
+
+  <div id="playlist-container" style="background:white; padding:15px; border-radius:10px; width:300px; max-height:350px; overflow-y:auto;">
+    <h3>Playlist</h3>
+    <ul id="playlist" style="list-style:none; padding-left:0; margin:0;"></ul>
+    </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
