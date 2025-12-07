@@ -1,5 +1,5 @@
 const CLIENT_ID = "9842a2b6d00a46b386ba48973447035f"; 
-const REDIRECT_URI = "https://tadeodev024.github.io/CeleyTade.github.io/"; // Ej: https://celeytade.github.io/
+const REDIRECT_URI = "https://CeleyTade.github.io/"; // Ej: https://celeytade.github.io/
 const YOUTUBE_API_KEY = "AIzaSyBT6Mtka2ESW2Q7fsLNIgDqRAa8o54_lIM";
 const SPOTIFY_PLAYLIST_ID = "5YS3pMDzrVjG8Hehl5a8dl"; // El código raro de la URL de tu playlist
 /* ===================================== */
