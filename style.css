@@ -124,8 +124,8 @@ button, .score-btn, .player-btn {
 }
 
 #yt-player-container {
-  width: 800px;
-  height: 450px;
+  width: 560px;
+  height: 315px;
   margin: 20px auto;
   border-radius: 10px;
   overflow: hidden;
@@ -154,15 +154,4 @@ input[type="text"] {
     
     /* La propiedad mágica que lo arregla */
     box-sizing: border-box;
-}
-#yt-player-wrapper {
-  position: relative;
-  /* CAMBIO: Tamaño mucho más grande */
-  width: 800px; 
-  height: 450px;
-  margin: 20px auto;
-  border: 5px solid #fcc7ef;
-  background-color: #000;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
