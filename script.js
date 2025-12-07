@@ -72,23 +72,17 @@ function addSong() {
   
   if (!id) return alert("❌ Link inválido. Prueba con uno normal de YouTube.");
   
-  // --- CAMBIO AQUÍ ---
-  // Intentamos subir a Firebase y avisamos si funciona o falla
-  db.ref('game/song').set(id)
-    .then(() => {
-        console.log("✅ ID enviado a Firebase correctamente");
-        // No hace falta hacer nada más, el listener 'on' actualizará el video solo
-    })
-    .catch((error) => {
-        alert("❌ Error de Firebase: " + error.message);
-        console.error(error);
-    });
-
+  // 1. Subir ID de la canción
+  db.ref('game/song').set(id);
+  // 2. Resetear turnos
   db.ref('game/lastClick').set(null);
+  // 3. Dar Play automático
   db.ref('game/play').set(true);
 
+  // Limpiar input
   document.getElementById("song-url").value = "";
 }
+
 // --- ESCUCHAS DE FIREBASE ---
 
 // 1. Cambio de Canción
