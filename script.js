@@ -94,36 +94,13 @@ db.ref('game/score1').on('value', s=>{score1=s.val()||0; document.getElementById
 db.ref('game/score2').on('value', s=>{score2=s.val()||0; document.getElementById("score2").innerText=score2;});
 
 // --- Sincronizar Reproductor ---
-function togglePlay(){ 
-  const currentTime = player && player.getCurrentTime ? player.getCurrentTime() : 0;
-  // Actualizamos Play y Timestamp al mismo tiempo
-  db.ref('game').update({
-    play: !isPlaying,
-    timestamp: currentTime
-  });
-}
-
-// Escuchar cambios de Play/Pause y corregir tiempo
-db.ref('game/play').on('value', s => {
-  const shouldPlay = s.val();
-  
-  // Leemos el timestamp guardado para sincronizar a ambos
-  db.ref('game/timestamp').once('value').then(snap => {
-    const time = snap.val() || 0;
-    
-    if(player && player.seekTo) {
-      const current = player.getCurrentTime();
-      // Si la diferencia entre tu video y el del server es mayor a 1 segundo, corregimos
-      if (Math.abs(current - time) > 1) {
-        player.seekTo(time, true);
-      }
-
-      if(shouldPlay) player.playVideo(); 
-      else player.pauseVideo();
-    }
-    
-    isPlaying = shouldPlay;
-  });
+function togglePlay(){ db.ref('game/play').set(!isPlaying); }
+db.ref('game/play').on('value', s=>{
+  const v=s.val();
+  if(player){
+    if(v) player.playVideo(); else player.pauseVideo();
+    isPlaying=v;
+  }
 });
 
 function nextSong(){
