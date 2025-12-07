@@ -1,4 +1,5 @@
 /* ---- Estilo "Cute 2000s" ---- */
+
 body {
   font-family: 'VT323', monospace;
   text-align: center;
@@ -13,72 +14,15 @@ h1 {
   font-size: 40px;
 }
 
-/* --- REPRODUCTOR --- */
-#yt-player-wrapper {
-  position: relative;
-  width: 560px; /* Ancho fijo */
-  height: 315px; /* Alto fijo */
-  margin: 20px auto;
-  border: 5px solid #fcc7ef;
-  background-color: #000; /* Fondo negro para que siempre se vea la caja */
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* Esta capa permite ver los controles de YT pero impide hacer clic */
-#blocker {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent; 
-  z-index: 10; 
-}
-
-/* --- CONTROLES --- */
-#controls {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  border: 4px dashed #9bd6f8;
-  max-width: 500px;
-  margin: 0 auto 20px auto;
-}
-
-.input-group input {
-  font-family: 'VT323', monospace;
-  font-size: 18px;
-  padding: 8px;
-  margin: 5px 0;
-  width: 80%;
-  border: 2px dashed #ccc;
-  text-align: center;
-}
-
-.action-btn {
-  font-family: 'VT323', monospace;
-  font-size: 20px;
-  padding: 5px 15px;
-  margin: 5px;
-  cursor: pointer;
-  background-color: #f1c40f;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  text-shadow: 1px 1px 0 #000;
-}
-
-/* --- BOTONES DE JUGADORES --- */
 .player-buttons {
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  justify-content: space-around;
   margin: 20px 0;
 }
 
 .player-btn {
-  width: 150px;
+  flex: 1;
+  margin: 10px;
   padding: 30px;
   font-size: 30px;
   font-weight: bold;
@@ -87,36 +31,20 @@ h1 {
   color: white;
   border: 3px solid white;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
-  transition: transform 0.1s;
 }
-.player-btn:active { transform: scale(0.95); }
 
 #player1-btn { background-color: #fcc7ef; }
 #player2-btn { background-color: #9bd6f8; }
 
-#reset-btn {
-  background: #95a5a6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* --- MENSAJES Y PUNTOS --- */
 #message {
-  font-size: 28px;
+  font-size: 24px;
   margin: 15px 0;
   font-weight: bold;
-  color: #d35400;
-  min-height: 40px; /* Evita saltos si no hay texto */
 }
 
 .scores {
   display: flex;
-  justify-content: center;
-  gap: 30px;
+  justify-content: space-around;
   margin-top: 20px;
 }
 
@@ -124,24 +52,110 @@ h1 {
   background: white;
   padding: 15px;
   border-radius: 10px;
-  border: 4px dashed #fcc7ef;
-  width: 150px;
+  box-shadow: none;
+  border: 4px dashed #fcc7ef; /* Borde rosa punteado */
+  width: 200px;
+}
+
+.score-box h2 {
+  margin: 5px 0;
+  font-size: 28px;
 }
 
 .score-buttons {
   display: flex;
   justify-content: space-between;
+  margin-top: 10px;
 }
 
 .score-btn {
   flex: 1;
-  margin: 0 2px;
-  padding: 5px;
-  font-size: 18px;
+  margin: 0 5px;
+  padding: 10px;
+  font-size: 20px;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: bold;
   color: white;
-  border-radius: 4px;
 }
+
+button, .score-btn, .player-btn {
+   font-family: 'VT323', monospace;
+}
+
 .add { background-color: #2ecc71; }
-.subtract { background-color: #e74c3c; }
+.subtract { background-color: #e67e22; }
+
+#controls {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#add-song {
+    margin-top: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    width: 320px;
+    /* Este borde (azul) sobreescribe al borde rosa de .score-box */
+    border: 4px dashed #9bd6f8; 
+    box-shadow: none;
+}
+
+#progress-container {
+  width: 300px;
+  height: 10px;
+  background: #ccc;
+  border-radius: 5px;
+  margin-top: 10px;
+  overflow: hidden;
+  border: 2px solid white;
+}
+
+#progress {
+  height: 100%;
+  width: 0;
+  background: #fcc7ef;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+#yt-player-container {
+  width: 560px;
+  height: 315px;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: none;
+  border: 5px solid #fcc7ef;
+}
+
+#song-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 10px;
+  filter: blur(5px);
+}
+
+#playlist-container {
+   border: 4px dashed #9bd6f8; /* Borde azul */
+   box-shadow: none !important;
+}
+
+/* --- ESTA ES LA CORRECCIÓN --- */
+input[type="text"] {
+    border: 2px dashed #ccc;
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    
+    /* Estilos que movimos del HTML al CSS */
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    
+    /* La propiedad mágica que lo arregla */
+    box-sizing: border-box;
+}
