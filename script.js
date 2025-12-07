@@ -36,14 +36,25 @@ function onYouTubeIframeAPIReady(){
   });
 }
 
+// ✨ FUNCIÓN DE SEGURIDAD PARA LIMPIAR DATOS ✨
+function getCleanID(val) {
+  if (!val) return null;
+  // Si el dato es un "objeto" (la versión rota), sacamos solo el ID
+  if (typeof val === 'object' && val.id) {
+    return val.id;
+  }
+  // Si es texto normal, lo devolvemos tal cual
+  return val;
+}
+
 function onPlayerReady(event) {
-  // Al cargar, revisamos si ya hay una canción guardada
   db.ref('game/song').once('value', s => {
-      const id = s.val();
+      // Usamos la función de seguridad aquí
+      const id = getCleanID(s.val());
+      
       if(id) {
           currentSongId = id;
           player.loadVideoById(currentSongId);
-          // Verificar si debería estar sonando
           db.ref('game/play').once('value', p => {
              if(!p.val()) player.pauseVideo();
           });
@@ -52,16 +63,14 @@ function onPlayerReady(event) {
 }
 
 function onPlayerStateChange(event) {
-    // Si el video termina, avisamos a la base de datos para apagar el "play"
     if (event.data === YT.PlayerState.ENDED) {
         db.ref('game/play').set(false);
     }
 }
 
-// --- LOGICA DE JUEGO (Recibir Video) ---
+// --- LOGICA DE JUEGO ---
 
 function extractYouTubeID(url) {
-  // Regex poderosa para detectar links de celular, pc, shorts, etc.
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
@@ -71,35 +80,32 @@ function addSong() {
   const url = document.getElementById("song-url").value.trim();
   const id = extractYouTubeID(url);
   
-  if (!id) return alert("❌ Link inválido. Prueba con un link normal de YouTube.");
+  if (!id) return alert("❌ Link inválido.");
   
-  // 1. Subir ID de la canción
+  // Guardamos solo el ID (Texto simple) para limpiar la base de datos
   db.ref('game/song').set(id);
-  // 2. Resetear turnos (nadie ha presionado)
   db.ref('game/lastClick').set(null);
-  // 3. Dar Play automático
   db.ref('game/play').set(true);
 
-  // Limpiar el input
   document.getElementById("song-url").value = "";
 }
 
 // --- ESCUCHAS DE FIREBASE ---
 
-// 1. Cambio de Canción
 db.ref('game/song').on('value', s=>{
-  const id = s.val(); 
+  // Usamos la función de seguridad también aquí
+  const id = getCleanID(s.val());
+  
   if(!id) return;
   
   currentSongId = id;
-  // Solo cargamos el video. Simple.
   if(player && player.loadVideoById) {
       player.loadVideoById(currentSongId);
   }
   document.getElementById("message").innerText = "🎶 Canción lista...";
 });
 
-// 2. Play/Pause (Simple true/false)
+// Play/Pause Simple
 function togglePlay(){ 
     db.ref('game/play').once('value', s => {
         db.ref('game/play').set(!s.val());
@@ -108,18 +114,16 @@ function togglePlay(){
 
 db.ref('game/play').on('value', s=>{
   const shouldPlay = s.val();
-  
   if(player && player.playVideo) {
     if(shouldPlay) player.playVideo(); 
     else player.pauseVideo();
   }
 });
 
-// 3. Botones Cele/Tade
+// Botones Cele/Tade
 let canPress = true;
 function playerPressed(num) {
   if (!canPress) return; 
-  // Guardar quién fue y PAUSAR
   db.ref('game/lastClick').set({ player: num });
   db.ref('game/play').set(false);
 }
@@ -140,8 +144,7 @@ db.ref('game/lastClick').on('value', snap => {
   document.getElementById("message").innerText = `🚨 ¡${nombre} paró la música!`;
 });
 
-
-// 4. Puntuaciones
+// Puntuaciones
 function addPoint(n){ db.ref('game/score'+n).transaction(score => (score || 0) + 1); }
 function subtractPoint(n){ db.ref('game/score'+n).transaction(score => (score || 0) - 1); }
 
