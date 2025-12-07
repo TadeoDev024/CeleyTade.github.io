@@ -1,3 +1,4 @@
+// --- CONFIGURACIÓN FIREBASE (No cambies esto si ya funcionaba) ---
 const firebaseConfig = {
   apiKey:"AIzaSyDnm7xpjFtaqwYeCRJG0ms8QR7J9k010Tk",
   authDomain:"juegoadivinalacancion-5152e.firebaseapp.com",
@@ -10,154 +11,131 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let score1=0, score2=0, isPlaying=false;
-let player;
-const playlist=[
-  {id:"dQw4w9WgXcQ", title:"Canción Misteriosa 1"},
-  {id:"3JZ4pnNtyxQ", title:"Canción Misteriosa 2"},
-  {id:"L_jWHffIx5E", title:"Canción Misteriosa 3"}
-];
-let currentSong=playlist[0];
+// --- VARIABLES ---
+let player; 
+let currentSongId = "";
+let score1 = 0;
+let score2 = 0;
 
-// --- YouTube API ---
+// --- YOUTUBE API ---
 function onYouTubeIframeAPIReady(){
   player = new YT.Player('player', {
-    videoId:currentSong.id,
-    events:{ 'onReady':()=>player.pauseVideo(), 'onStateChange': syncProgress }
+    height: '100%', 
+    width: '100%',
+    videoId: '', 
+    playerVars: { 
+      'controls': 1, 
+      'disablekb': 1, 
+      'rel': 0,
+      'modestbranding': 1
+    }, 
+    events:{ 
+      'onReady': onPlayerReady,
+      'onStateChange': onPlayerStateChange
+    }
   });
 }
 
-function syncProgress(event){
-  if(event.data === YT.PlayerState.PLAYING) updateProgress();
-}
-function updateProgress(){
-  if(player && player.getCurrentTime){
-    const pct=(player.getCurrentTime()/player.getDuration())*100;
-    document.getElementById("progress").style.width=pct+"%";
-    if(isPlaying) requestAnimationFrame(updateProgress);
-  }
-}
-
-// --- Botones ---
-// --- 🔹 Control de turnos ---
-let canPress = true;
-
-// Alguien presiona su botón
-function playerPressed(num) {
-  if (!canPress) return; // si ya hay alguien que presionó, no hacer nada
-
-  // Registrar quién presionó y pausar video
-  db.ref('game/lastClick').set({
-    player: num,
-    time: Date.now()
+function onPlayerReady(event) {
+  db.ref('game/song').once('value', s => {
+      const id = s.val();
+      if(id) {
+          currentSongId = id;
+          player.loadVideoById(currentSongId);
+          db.ref('game/play').once('value', p => {
+             if(!p.val()) player.pauseVideo();
+          });
+      }
   });
-  db.ref('game/play').set(false);
 }
 
-// Resetear el turno para volver a habilitar ambos botones
-function resetButtons() {
-  db.ref('game/lastClick').set(null); // borra en Firebase
-  db.ref('game/play').set(true); // vuelve a reproducir el video
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        db.ref('game/play').set(false);
+    }
 }
 
-// Escuchar cambios de turno desde Firebase
-db.ref('game/lastClick').on('value', snap => {
-  const d = snap.val();
+// --- LOGICA DE JUEGO ---
 
-  if (!d) {
-    // Si no hay turno guardado, habilitar ambos y mostrar mensaje
-    canPress = true;
-    document.getElementById("message").innerText = "🎵 Nuevo turno: ¡a jugar!";
-    return;
-  }
-
-  // Si hay un jugador que presionó, mostrar quién fue
-  canPress = false;
-  document.getElementById("message").innerText =
-    d.player === 1
-      ? "💗 ¡Cele presionó primero! ⏸️"
-      : "💙 ¡Tade presionó primero! ⏸️";
-});
-
-// --- Puntajes ---
-function addPoint(n){ db.ref('game/score'+n).set((n===1?++score1:++score2)); }
-// CORREGIDO:
-function subtractPoint(n){ db.ref('game/score'+n).set((n===1?--score1:--score2)); }
-db.ref('game/score1').on('value', s=>{score1=s.val()||0; document.getElementById("score1").innerText=score1;});
-db.ref('game/score2').on('value', s=>{score2=s.val()||0; document.getElementById("score2").innerText=score2;});
-
-// --- Sincronizar Reproductor ---
-function togglePlay(){ db.ref('game/play').set(!isPlaying); }
-db.ref('game/play').on('value', s=>{
-  const v=s.val();
-  if(player){
-    if(v) player.playVideo(); else player.pauseVideo();
-    isPlaying=v;
-  }
-});
-
-function nextSong(){
-  const next=playlist[Math.floor(Math.random()*playlist.length)];
-  db.ref('game/song').set(next);
-}
-db.ref('game/song').on('value', s=>{
-  const v=s.val(); if(!v) return;
-  currentSong=v;
-  if(player) player.loadVideoById(currentSong.id);
-  document.getElementById("song-title").innerText="";
-});
-
-function revealSong(){ db.ref('game/reveal').set(currentSong.title); }
-db.ref('game/reveal').on('value', s=>{
-  const title=s.val();
-  if(title) document.getElementById("song-title").innerText=title;
-});
-// --- Extraer ID de YouTube ---
 function extractYouTubeID(url) {
-  const regex = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  // Esta expresión regular es más robusta para links de celular y PC
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
 }
 
-// --- Agregar nueva canción ---
-// (Esta función se queda porque la usa el formulario de ARRIBA)
 function addSong() {
   const url = document.getElementById("song-url").value.trim();
-  const name = document.getElementById("song-name").value.trim() || "Canción Misteriosa";
   const id = extractYouTubeID(url);
-
-  if (!id) {
-    alert("❌ URL de YouTube no válida");
-    return;
-  }
-
-  const newSong = { id, title: name };
-
-  // Guardar en Firebase playlist
-  db.ref('playlist').push(newSong);
-
-  // Actualizar video actual y reproducir
-  db.ref('game/song').set(newSong);
+  
+  if (!id) return alert("❌ Link inválido. Copia el link normal de YouTube.");
+  
+  // 1. Subir ID de la canción
+  db.ref('game/song').set(id);
+  // 2. Resetear turnos
+  db.ref('game/lastClick').set(null);
+  // 3. Dar Play automático
   db.ref('game/play').set(true);
 
-  // Limpiar campos
   document.getElementById("song-url").value = "";
-  document.getElementById("song-name").value = "";
 }
 
-// --- Limpiar playlist ---
-// (Función y listener eliminados porque borramos el botón)
+// --- ESCUCHAS DE FIREBASE ---
 
-// --- Sincronizar playlist desde Firebase ---
-db.ref('playlist').on('value', snap => {
-  const list = snap.val();
-  const ul = document.getElementById("playlist");
-  ul.innerHTML = "";
-  if (list) {
-    Object.values(list).forEach(song => {
-      const li = document.createElement("li");
-      li.innerText = song.title;
-      ul.appendChild(li);
+// 1. Cambio de Canción
+db.ref('game/song').on('value', s=>{
+  const id = s.val(); 
+  if(!id) return;
+  
+  currentSongId = id;
+  if(player && player.loadVideoById) {
+      player.loadVideoById(currentSongId);
+  }
+  document.getElementById("message").innerText = "🎶 Canción lista...";
+});
+
+// 2. Play/Pause
+function togglePlay(){ 
+    db.ref('game/play').once('value', s => {
+        db.ref('game/play').set(!s.val());
     });
+}
+
+db.ref('game/play').on('value', s=>{
+  const shouldPlay = s.val();
+  if(player && player.playVideo) {
+    shouldPlay ? player.playVideo() : player.pauseVideo();
   }
 });
+
+// 3. Botones Cele/Tade
+let canPress = true;
+function playerPressed(num) {
+  if (!canPress) return; 
+  db.ref('game/lastClick').set({ player: num });
+  db.ref('game/play').set(false); // Pausa al apretar
+}
+
+function resetButtons() {
+  db.ref('game/lastClick').set(null);
+  document.getElementById("message").innerText = "🔄 ¡Sigan jugando!";
+}
+
+db.ref('game/lastClick').on('value', snap => {
+  const d = snap.val();
+  if (!d) {
+    canPress = true;
+    return;
+  }
+  canPress = false;
+  const nombre = d.player === 1 ? "💗 Cele" : "💙 Tade";
+  document.getElementById("message").innerText = `🚨 ¡${nombre} paró la música!`;
+});
+
+
+// 4. Puntuaciones
+function addPoint(n){ db.ref('game/score'+n).transaction(score => (score || 0) + 1); }
+function subtractPoint(n){ db.ref('game/score'+n).transaction(score => (score || 0) - 1); }
+
+db.ref('game/score1').on('value', s=>{ score1=s.val()||0; document.getElementById("score1").innerText=score1; });
+db.ref('game/score2').on('value', s=>{ score2=s.val()||0; document.getElementById("score2").innerText=score2; });
