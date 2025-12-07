@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Adivina la Canción: Cele vs Tade</title>
+<title>Te amo Celeste ♥</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
@@ -20,15 +20,13 @@
 
   <div id="controls">
     <div class="input-group">
-      <h3>1. Pegar Link de YouTube 🔗</h3>
-      <input type="text" id="song-url" placeholder="Ej: https://youtu.be/..." autocomplete="off">
-      <input type="text" id="song-name" placeholder="Nombre de la Canción (Para revelar después)" autocomplete="off">
+      <h3>Pegar Link de YouTube 🔗</h3>
+      <input type="text" id="song-url" placeholder="Ej: https://youtu.be/dQw4w9WgXcQ" autocomplete="off">
       <button onclick="addSong()" class="action-btn" style="background:#2ecc71;">Cargar Canción</button>
     </div>
 
     <div class="control-buttons">
       <button onclick="togglePlay()" class="action-btn">▶️ Play/Pause Global</button>
-      <button onclick="revealSong()" class="action-btn">👀 Revelar Nombre</button>
     </div>
   </div>
 
@@ -45,7 +43,6 @@
   <button id="reset-btn" onclick="resetButtons()">🔄 Resetear Turno</button>
   
   <div id="message">Esperando canción...</div>
-  <div id="song-title"></div>
 
   <div class="scores">
     <div class="score-box">

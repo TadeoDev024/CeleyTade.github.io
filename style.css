@@ -16,23 +16,24 @@ h1 {
 /* --- REPRODUCTOR --- */
 #yt-player-wrapper {
   position: relative;
-  width: 560px;
-  height: 315px;
+  width: 560px; /* Ancho fijo */
+  height: 315px; /* Alto fijo */
   margin: 20px auto;
   border: 5px solid #fcc7ef;
+  background-color: #000; /* Fondo negro para que siempre se vea la caja */
   border-radius: 10px;
-  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Esta capa hace la magia: permite ver pero no tocar */
+/* Esta capa permite ver los controles de YT pero impide hacer clic */
 #blocker {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: transparent;
-  z-index: 10; /* Está por encima del video */
+  background: transparent; 
+  z-index: 10; 
 }
 
 /* --- CONTROLES --- */
@@ -109,14 +110,7 @@ h1 {
   margin: 15px 0;
   font-weight: bold;
   color: #d35400;
-}
-
-#song-title {
-  font-size: 30px;
-  font-weight: bold;
-  margin-top: 10px;
-  filter: blur(8px);
-  transition: filter 0.5s;
+  min-height: 40px; /* Evita saltos si no hay texto */
 }
 
 .scores {
