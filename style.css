@@ -140,10 +140,6 @@ button, .score-btn, .player-btn {
   filter: blur(5px);
 }
 
-#playlist-container {
-   border: 4px dashed #9bd6f8; /* Borde azul */
-   box-shadow: none !important;
-}
 
 /* --- ESTA ES LA CORRECCIÓN --- */
 input[type="text"] {
