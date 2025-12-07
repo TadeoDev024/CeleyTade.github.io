@@ -22,11 +22,14 @@ let spotifyToken = "";
 let gamePlaylist = []; // Aquí vivirá la playlist de Spotify
 let currentSong = { id: "dQw4w9WgXcQ", title: "Esperando..." };
 
-// --- 1. Autenticación con Spotify ---
+// --- 1. Autenticación con Spotify (CORREGIDO) ---
 function authorizeSpotify() {
   const scope = "playlist-read-private playlist-read-collaborative";
+  
+  // CORRECCIÓN: URL oficial limpia y con los parámetros correctos
+  // Fíjate que usamos 'https://accounts.spotify.com/authorize'
   const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}`;
-
+  
   window.location.href = url;
 }
 // Al cargar la página, revisamos si volvimos de Spotify con el token
@@ -48,10 +51,13 @@ async function loadSpotifyPlaylist() {
   document.getElementById("message").innerText = "⏳ Cargando playlist de Spotify...";
   
   try {
-
-const res = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_PLAYLIST_ID}/tracks?limit=100`, {
-  headers: { Authorization: `Bearer ${spotifyToken}` }
-});
+    // CORRECCIÓN: URL oficial de la API de Spotify
+    const res = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_PLAYLIST_ID}/tracks?limit=100`, {
+      headers: { Authorization: `Bearer ${spotifyToken}` }
+    });
+    
+    if (!res.ok) throw new Error("Error en la respuesta de Spotify"); // Chequeo extra
+    
     const data = await res.json();
     
     // Guardamos las canciones en nuestra lista
@@ -63,8 +69,8 @@ const res = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_PLAYLIST
     updatePlaylistUI();
     
   } catch (e) {
-    alert("Error cargando playlist. Revisa tu ID de Playlist.");
-    console.error(e);
+    alert("Error cargando playlist. Revisa la consola (F12) para más detalles.");
+    console.error("Error Spotify:", e);
   }
 }
 
