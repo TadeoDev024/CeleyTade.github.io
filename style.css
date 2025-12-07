@@ -13,12 +13,11 @@ h1 {
   font-size: 40px;
 }
 
-/* --- REPRODUCTOR (AGRANDADO) --- */
+/* --- REPRODUCTOR GRANDE --- */
 #yt-player-wrapper {
   position: relative;
-  /* CAMBIO: Tamaño mucho más grande */
-  width: 800px; 
-  height: 450px;
+  width: 800px; /* Ancho grande */
+  height: 450px; /* Alto grande */
   margin: 20px auto;
   border: 5px solid #fcc7ef;
   background-color: #000;
@@ -32,7 +31,7 @@ h1 {
   padding: 15px;
   border-radius: 10px;
   border: 4px dashed #9bd6f8;
-  max-width: 600px; /* Un poco más ancho para que entre todo */
+  max-width: 600px; 
   margin: 0 auto 20px auto;
 }
 
@@ -59,7 +58,7 @@ h1 {
   text-shadow: 1px 1px 0 #000;
 }
 
-/* --- BOTONES DE JUGADORES --- */
+/* --- BOTONES DE JUGADORES (GRANDES) --- */
 .player-buttons {
   display: flex;
   justify-content: center;
@@ -68,7 +67,7 @@ h1 {
 }
 
 .player-btn {
-  width: 150px;
+  width: 150px; /* ESTO asegura que sean grandes */
   padding: 30px;
   font-size: 30px;
   font-weight: bold;
@@ -133,5 +132,7 @@ h1 {
   color: white;
   border-radius: 4px;
 }
+
+/* Colores clásicos: Verde y Rojo */
 .add { background-color: #2ecc71; }
 .subtract { background-color: #e74c3c; }
