@@ -13,26 +13,17 @@ h1 {
   font-size: 40px;
 }
 
-/* --- REPRODUCTOR --- */
+/* --- REPRODUCTOR (AGRANDADO) --- */
 #yt-player-wrapper {
   position: relative;
-  width: 560px; /* Ancho fijo */
-  height: 315px; /* Alto fijo */
+  /* CAMBIO: Tamaño mucho más grande */
+  width: 800px; 
+  height: 450px;
   margin: 20px auto;
   border: 5px solid #fcc7ef;
   background-color: #000;
   border-radius: 10px;
-}
-
-/* Capa invisible para bloquear clics en el video */
-#blocker {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent; 
-  z-index: 10; 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 /* --- CONTROLES --- */
@@ -41,7 +32,7 @@ h1 {
   padding: 15px;
   border-radius: 10px;
   border: 4px dashed #9bd6f8;
-  max-width: 500px;
+  max-width: 600px; /* Un poco más ancho para que entre todo */
   margin: 0 auto 20px auto;
 }
 
@@ -50,7 +41,7 @@ h1 {
   font-size: 18px;
   padding: 8px;
   margin: 5px 0;
-  width: 80%;
+  width: 70%;
   border: 2px dashed #ccc;
   text-align: center;
 }
@@ -68,7 +59,7 @@ h1 {
   text-shadow: 1px 1px 0 #000;
 }
 
-/* --- BOTONES DE JUGADORES (Haciéndolos grandes de nuevo) --- */
+/* --- BOTONES DE JUGADORES --- */
 .player-buttons {
   display: flex;
   justify-content: center;
@@ -77,7 +68,7 @@ h1 {
 }
 
 .player-btn {
-  width: 150px;      /* Ancho fijo para que sean grandes */
+  width: 150px;
   padding: 30px;
   font-size: 30px;
   font-weight: bold;
@@ -142,6 +133,5 @@ h1 {
   color: white;
   border-radius: 4px;
 }
-/* Volvemos al verde y rojo clásico */
 .add { background-color: #2ecc71; }
 .subtract { background-color: #e74c3c; }
