@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Te amo Celeste ♥</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -15,12 +17,14 @@
 </h1>
 
 <div id="game-area">
+
   <div id="controls">
     <div class="input-group">
       <h3>Pegar Link de YouTube 🔗</h3>
-      <input type="text" id="song-url" placeholder="Link aquí..." autocomplete="off">
+      <input type="text" id="song-url" placeholder="Ej: https://youtu.be/dQw4w9WgXcQ" autocomplete="off">
       <button onclick="addSong()" class="action-btn" style="background:#2ecc71;">Cargar Canción</button>
     </div>
+
     <div class="control-buttons">
       <button onclick="togglePlay()" class="action-btn">▶️ Play/Pause Global</button>
     </div>
@@ -28,7 +32,7 @@
 
   <div id="yt-player-wrapper">
     <div id="player"></div>
-  </div>
+    <div id="blocker"></div> </div>
 
   <div class="player-buttons">
     <button id="player1-btn" class="player-btn" onclick="playerPressed(1)">Cele</button>
@@ -55,6 +59,7 @@
       </div>
     </div>
   </div>
+
 </div> 
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
