@@ -25,13 +25,10 @@ let currentSong = { id: "dQw4w9WgXcQ", title: "Esperando..." };
 // --- 1. Autenticación con Spotify ---
 function authorizeSpotify() {
   const scope = "playlist-read-private playlist-read-collaborative";
-  
-  
   const url = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}`;
-  
+
   window.location.href = url;
 }
-
 // Al cargar la página, revisamos si volvimos de Spotify con el token
 window.onload = () => {
   const hash = window.location.hash;
@@ -51,9 +48,10 @@ async function loadSpotifyPlaylist() {
   document.getElementById("message").innerText = "⏳ Cargando playlist de Spotify...";
   
   try {
-    const res = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_PLAYLIST_ID}/tracks?limit=100`, {
-      headers: { Authorization: `Bearer ${spotifyToken}` }
-    });
+
+const res = await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_PLAYLIST_ID}/tracks?limit=100`, {
+  headers: { Authorization: `Bearer ${spotifyToken}` }
+});
     const data = await res.json();
     
     // Guardamos las canciones en nuestra lista
