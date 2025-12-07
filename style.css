@@ -124,8 +124,8 @@ button, .score-btn, .player-btn {
 }
 
 #yt-player-container {
-  width: 560px;
-  height: 315px;
+  width: 800px;
+  height: 450px;
   margin: 20px auto;
   border-radius: 10px;
   overflow: hidden;
