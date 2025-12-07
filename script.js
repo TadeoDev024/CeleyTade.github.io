@@ -1,5 +1,4 @@
 // --- CONFIGURACIÓN FIREBASE ---
-// (Tu configuración no cambia)
 const firebaseConfig = {
   apiKey:"AIzaSyDnm7xpjFtaqwYeCRJG0ms8QR7J9k010Tk",
   authDomain:"juegoadivinalacancion-5152e.firebaseapp.com",
@@ -53,7 +52,7 @@ function onPlayerReady(event) {
 }
 
 function onPlayerStateChange(event) {
-    // Si el video termina, avisamos a la base de datos
+    // Si el video termina, avisamos a la base de datos para apagar el "play"
     if (event.data === YT.PlayerState.ENDED) {
         db.ref('game/play').set(false);
     }
@@ -62,7 +61,7 @@ function onPlayerStateChange(event) {
 // --- LOGICA DE JUEGO (Recibir Video) ---
 
 function extractYouTubeID(url) {
-  // Esta es la expresión regular "todoterreno" que funciona mejor
+  // Regex poderosa para detectar links de celular, pc, shorts, etc.
   const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regex);
   return match ? match[1] : null;
@@ -72,13 +71,13 @@ function addSong() {
   const url = document.getElementById("song-url").value.trim();
   const id = extractYouTubeID(url);
   
-  if (!id) return alert("❌ Link inválido. Usa un link normal de YouTube.");
+  if (!id) return alert("❌ Link inválido. Prueba con un link normal de YouTube.");
   
-  // 1. Subir ID de la canción (Lógica simple)
+  // 1. Subir ID de la canción
   db.ref('game/song').set(id);
-  // 2. Resetear turnos
+  // 2. Resetear turnos (nadie ha presionado)
   db.ref('game/lastClick').set(null);
-  // 3. Dar Play automático (Usando el sistema simple de true/false)
+  // 3. Dar Play automático
   db.ref('game/play').set(true);
 
   // Limpiar el input
@@ -93,14 +92,14 @@ db.ref('game/song').on('value', s=>{
   if(!id) return;
   
   currentSongId = id;
-  // Solo cargamos el video, sin inventos raros de tiempo
+  // Solo cargamos el video. Simple.
   if(player && player.loadVideoById) {
       player.loadVideoById(currentSongId);
   }
   document.getElementById("message").innerText = "🎶 Canción lista...";
 });
 
-// 2. Play/Pause (Simple)
+// 2. Play/Pause (Simple true/false)
 function togglePlay(){ 
     db.ref('game/play').once('value', s => {
         db.ref('game/play').set(!s.val());
